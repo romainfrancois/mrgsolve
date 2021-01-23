@@ -274,6 +274,30 @@ setMethod("as.matrix", "matlist", function(x,...) {
   SUPERMATRIX(x@data,...)
 })
 
+as_matrix <- function(x,...) UseMethod("as_matrix")
+#' @export
+as_matrix.matlist <- function(x, output = c("list", "matrix")) { 
+  if(length(x)==0) return(matrix(nrow = 0, ncol = 0))
+  lab <- labels(x)
+  output <- match.arg(output)
+  if(output=="matrix") {
+    lab <- unlist(lab)
+    mat <- as.matrix(x)
+    dimnames(mat) <- list(lab,lab)
+    return(mat)
+  }
+  mats <- as.list(x)
+  for(i in seq_along(mats)) {
+    dimnames(mats[[i]]) <- list(lab[[i]],lab[[i]])  
+  }
+  return(mats)
+}
+
+#' @export
+as_matrix.mrgmod <- function(x, ...) {
+  list(omega = as_matrix(omat(x), ...), sigma = as_matrix(smat(x),...))  
+}
+
 ##' @export
 ##' @rdname matlist
 names.matlist <- function(x) {
