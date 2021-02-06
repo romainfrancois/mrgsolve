@@ -484,7 +484,12 @@ setMethod("plot", c("mrgsims","formula"), function(x,y,
 #' @export
 setMethod("plot", c("mrgsims","character"), function(x,y,...) {
   y <- gsub("\n+", " ", y)
-  y <- cvec_cs(y)
+  y <- .ren.create(y)
+  if(!y$identical) {
+    valid <- which(y$old %in% names(x@data))
+    dest <- which(names(x@data) %in% y$old[valid])
+  }
+  y <- y$old
   time <- timename(x@data)
   lhs <- paste0(y,collapse="+")
   fm <- as.formula(paste0(lhs,"~",time))
